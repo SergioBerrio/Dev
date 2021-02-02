@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de balizas de Euskadi</title>
+    <link rel="icon" type="image/jp" href="imagenes/euskalmet2.jpg">
+
+    <!-- jQueryui Links -->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <!-- Bootstrap Links -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+
+    <!-- Fontawesome Links -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <!-- Leaflet Links -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+    <style>
+        @media (max-width: 1000px) {
+            body {
+                overflow-x: hidden;
+                background-image: url("imagenes/tiempo.jpg");
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-size: cover;
+            }
+            #map {
+                height: 400px;
+                width: 90%;
+                margin-left: 7%;
+                border: 3px solid black;
+                border-radius: 10px;
+            }
+            h2 {
+                padding: 10px;
+                text-align: center;
+            }
+            .container-fluid {
+                background: #FFF;
+                width: 90%;
+                height: 340px;
+                overflow-y: auto;
+                border: 3px solid black;
+                border-radius: 10px;
+                margin-top: 2%;
+                margin-bottom: 2%;
+            }
+            .container-estadisticas {
+                background: #FFF;
+                width: 90%;
+                height: 400px;
+                border: 3px solid black;
+                border-radius: 10px;
+                margin-top: 2%;
+                margin-left: 7%;
+                text-align: center;
+            }
+            .draggable {
+                cursor: pointer;
+                font-size: 22px;
+                margin-bottom: 3.5%;
+            }
+            .draggable:hover {
+                cursor: grab;
+            }
+            #logout {
+                color: white;
+                border: 3px solid white;
+                border-radius: 10px;
+                padding: 10px;
+                margin-left: 10px;
+            }
+            #logout:hover {
+                background-color: forestgreen;
+                color: white;
+                text-decoration: none;
+            }
+            #random {
+                color: white;
+                border: 2px solid white;
+                border-radius: 10px;
+                padding: 10px;
+            }
+            #random:hover {
+                background-color: forestgreen;
+                color: white;
+                text-decoration: none;
+                cursor: pointer;
+            }
+            nav ul {
+                list-style: none;
+                float: right;
+                padding: 30px;
+            }
+            #imagen {
+                padding: 15px;
+            }
+            #divArriba {
+                margin-top: 1%;
+                width: 100%;
+            }
+            .leaflet-popup-content-wrapper {
+                background-color: teal;
+            }
+            .leaflet-popup-content {
+                color: white;
+                font-size: 15px;
+            }
+            .leaflet-popup-tip {
+                background-color: teal;
+            }
+            .panelMeteo:hover {
+                transform: scale(0.9);
+            }
+        }
+        
+        @media (min-width: 1000px) {
+            #map {
+                display: inline-block;
+                width: 65%;
+                height: 430px;
+                margin-left: 6%;
+                border: 3px solid black;
+                border-radius: 10px;
+            }
+            #panel:hover {
+                transform: scale(1.1);
+            }
+            h2 {
+                padding: 10px;
+                text-align: center;
+            }
+            h3 {
+                margin-left: 3%;
+                margin-bottom: 4%;
+            }
+            .container-estadisticas {
+                background: #FFF;
+                display: inline-block;
+                width: 23%;
+                height: 430px;
+                border: 3px solid black;
+                border-radius: 10px;
+                margin-left: 2%;
+                text-align: center;
+            }
+            .container-fluid {
+                background: #FFF;
+                height: 310px;
+                width: 90%;
+                overflow-y: auto;
+                border: 3px solid black;
+                border-radius: 10px;
+                margin-top: 1%;
+                margin-bottom: 2%;
+            }
+            .btn {
+                font-size: 20px;
+                margin-bottom: 3%;
+            }
+            .btn:hover {
+                cursor: grab;
+            }
+            #logout {
+                color: white;
+                border: 2px solid white;
+                border-radius: 10px;
+                padding: 10px;
+                margin-left: 10px;
+            }
+            #logout:hover {
+                background-color: forestgreen;
+                color: white;
+                text-decoration: none;
+            }
+            #random {
+                color: white;
+                border: 2px solid white;
+                border-radius: 10px;
+                padding: 10px;
+            }
+            #random:hover {
+                background-color: forestgreen;
+                color: white;
+                text-decoration: none;
+                cursor: pointer;
+            }
+            nav ul {
+                list-style: none;
+                float: right;
+                padding: 30px;
+            }
+            #imagen {
+                padding: 15px;
+            }
+            #divArriba {
+                margin-top: 1%;
+                width: 100%;
+            }
+            body {
+                background-image: url("imagenes/tiempo.jpg");
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-size: cover;
+                overflow-x: hidden;
+            }
+            .invisible {
+                display: none;
+            }
+            .leaflet-popup-content-wrapper {
+                background-color: teal;
+            }
+            .leaflet-popup-content {
+                color: white;
+                font-size: 15px;
+            }
+            .leaflet-popup-tip {
+                background-color: teal;
+            }
+            .panelMeteo:hover {
+                transform: scale(0.9);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="bg-dark">
+        <a class="navbar-brand" id="imagen" href="mapaBalizas.html">
+            <img src="imagenes/euskalmet2.jpg" width="50" height="50" class="d-inline-block align-top" alt="" loading="lazy">
+        </a>
+
+        <ul>
+            <li>
+                <a id="random">
+                    Números random
+                </a>
+                <a href="LoginRegistro.html" id="logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- El div que contiene el mapa y el cuadro con las características extra -->
+    <div class="row" id="divArriba">
+        <!-- El mapa con las balizas -->
+        <div id="map"></div>
+
+        <!-- El contenedor con las características -->
+        <div class="container-estadisticas">
+            <div class="col-sm-12 col-lg-12 col-md-12">
+                <h3>Otras estadísticas</h3>
+
+                <br>
+
+                <div class="draggable" id="TemAir">
+                    <span class="btn btn-primary">Temperatura del aire</span>
+                </div>
+
+
+
+                <div class="draggable" id="VelMed">
+                    <span class="btn btn-primary">Velocidad Media</span>
+                </div>
+
+
+
+                <div class="draggable" id="DirVien">
+                    <span class="btn btn-primary">Dirección del viento</span>
+                </div>
+
+
+
+                <div class="draggable" id="VelMax">
+                    <span class="btn btn-primary">Velocidad Máxima</span>
+                </div>
+
+
+
+                <div class="draggable" id="Precip">
+                    <span class="btn btn-primary">Precipitaciones</span>
+                </div>
+
+
+
+                <div class="draggable" id="Humedad">
+                    <span class="btn btn-primary">Humedad</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- El contenedor con los paneles meteorológicos -->
+    <div class="container-fluid">
+        <h2>PANEL METEOROLÓGICO</h2>
+        <div class="row ml-auto mr-auto" id="panel2">
+        </div>
+    </div>
+
+    <script>
+        /** Vista asignada a Euskadi **/
+        var map = L.map('map', {
+            zoomDelta: 0.50,
+            zoomSnap: 0
+        }).setView([43.0300000, -2.6000000], 8.6);
+        var markers = {};
+        var i = 0;
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var redIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        var blueIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+
+
+        /** Función que crea los paneles de las balizas **/
+        function añadirBaliza(idBaliza, recogida) {
+            if (document.getElementById(idBaliza)) {
+                alert("Ya has seleccionado ese panel!!");
+
+            } else {
+                for (let i = 0; i < recogida.length; i++) {
+                    if (recogida[i]["idBaliza"] == idBaliza) {
+
+                        var divPanel = document.createElement("div");
+                        divPanel.setAttribute("id", recogida[i]["idBaliza"]);
+                        divPanel.className = "droppable panelMeteo";
+                        //divPanel.className = "panelMeteo";
+
+
+                        var x = document.createElement("h2");
+                        x.innerText = recogida[i]["Nombre"];
+
+
+                        var x2 = document.createElement("h3");
+                        x2.setAttribute("id", recogida[i]["idBaliza"] + "--TemAir");
+                        x2.innerText = `Temperatura: ${recogida[i]["TemAir"]}°C`;
+
+
+                        var x3 = document.createElement("h3");
+                        x3.setAttribute("id", recogida[i]["idBaliza"] + "--Humedad");
+                        x3.innerText = `Humedad: ${recogida[i]["Humedad"]}%`;
+
+
+                        var x4 = document.createElement("h3");
+                        x4.setAttribute("id", recogida[i]["idBaliza"] + "--VelMed");
+                        x4.innerText = `Vel. Med: ${recogida[i]["VelMed"]} Km/h`;
+                        x4.style.display = "none"
+
+
+                        var x5 = document.createElement("h3");
+                        x5.setAttribute("id", recogida[i]["idBaliza"] + "--DirMed");
+                        x5.innerText = `Dir. del viento: ${recogida[i]["DirMed"]}°`;
+                        x5.style.display = "none"
+
+
+                        var x6 = document.createElement("h3");
+                        x6.setAttribute("id", recogida[i]["idBaliza"] + "--VelMax");
+                        x6.innerText = `Vel. Máx: ${recogida[i]["VelMax"]} Km/h`;
+                        x6.style.display = "none"
+
+
+                        var x7 = document.createElement("h3");
+                        x7.setAttribute("id", recogida[i]["idBaliza"] + "--Precip");
+                        x7.innerText = `Precipitaciones: ${recogida[i]["Precip"]} mm=l/m²`;
+                        x7.style.display = "none"
+                    }
+                }
+
+                //divPanel.appendChild(templateBalizas);
+                divPanel.appendChild(x);
+                divPanel.appendChild(x2);
+                divPanel.appendChild(x3);
+                divPanel.appendChild(x4);
+                divPanel.appendChild(x5);
+                divPanel.appendChild(x6);
+                divPanel.appendChild(x7);
+
+                document.getElementById("panel2").appendChild(divPanel);
+
+                for (let i in map["_targets"]) {
+                    try {
+                        if (idBaliza == map["_targets"][i]["options"]["myCustomId"]) {
+                            map["_targets"][i].setIcon(redIcon);
+                        }
+                    } catch (error) {
+                        continue;
+                    }
+                }
+
+                sessionStorage.setItem(idBaliza, JSON.stringify(idBaliza));
+
+                /** Estilos del cuadro meteorológico creado **/
+                divPanel.style.transition = "transform";
+                divPanel.style.transitionDuration = "0.3s";
+                divPanel.style.border = "4px solid steelblue";
+                divPanel.style.borderRadius = "10px";
+                divPanel.style.cursor = "pointer";
+                divPanel.style.width = "25%";
+                divPanel.style.marginLeft = "4%";
+                divPanel.style.marginRight = "4%";
+                divPanel.style.marginBottom = "2%";
+                divPanel.style.textAlign = "left";
+            }
+
+            addClassHandler()
+        }
+
+        /** Función que elimina el panel de la baliza **/
+        function eliminarBaliza(idBaliza) {
+            var elemento = document.getElementById(idBaliza);
+            elemento.remove();
+
+            for (let i in map["_targets"]) {
+                try {
+                    if (idBaliza == map["_targets"][i]["options"]["myCustomId"]) {
+                        map["_targets"][i].setIcon(blueIcon);
+                    }
+                } catch (error) {
+                    continue;
+                }
+            }
+
+            sessionStorage.removeItem(idBaliza);
+        }
+
+
+        /** Peticiones Ajax **/
+        $(document).ready(function() {
+
+            /** Drag **/
+            $(".draggable").draggable({
+                revert: true
+            }, {
+                cursor: "grabbing",
+                cursorAt: {
+                    bottom: 0
+                }
+            });
+
+            $("#random").click(function(e) {
+
+                e.preventDefault();
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://localhost:3000/api/numRandom',
+                    success: function(result) {
+                        alert("Numeros randomizados correctamente.");
+                    },
+                    error: function(result) {
+                        console.log(result);
+                    }
+                });
+            });
+
+            $("#logout").click(function(e) {
+
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    headers: {
+                        "Authorization": 'Bearer ' + sessionStorage.getItem('token')
+                    },
+                    url: 'http://localhost:3000/api/logout',
+                    success: function(result) {
+                        alert("Has cerrado sesión.");
+
+                        window.location = "LoginRegistro.html";
+                    },
+                    error: function(result) {
+                        alert("Se ha producido algún error.");
+                    }
+                });
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: 'http://localhost:3000/api/recuperarDatos',
+                headers: {
+                    "Authorization": 'Bearer ' + sessionStorage.getItem('token')
+                },
+                success: function(result) {
+                    recogida = result;
+
+                    crearBalizas(recogida);
+                },
+                error: function(result) {
+                    alert("Error en el servidor. Acceso denegado.");
+
+                    window.location = "LoginRegistro.html";
+                }
+            });
+        });
+
+        /** Función que llama a los datos de las balizas **/
+        function crearBalizas(recogida) {
+
+            for (let i = 0; i < recogida.length; i++) {
+                console.log(recogida[i]);
+
+                marcador = L.marker([recogida[i]["y"], recogida[i]["x"]], {
+                    myCustomId: recogida[i]["idBaliza"]
+                }); /** Se añaden las ubicaciones de las balizas **/
+
+                marcador.bindPopup(`ID: ${recogida[i]["idBaliza"]}<br>Nombre: ${recogida[i]["Nombre"]}
+                
+                <br>Municipio: ${recogida[i]["Municipio"]}<br>Provincia: ${recogida[i]["Provincia"]}
+
+                <br>Longitud: ${recogida[i]["x"]}<br>Latitud: ${recogida[i]["y"]}
+
+                <br><br><button class='btn btn-dark' onclick='añadirBaliza("${recogida[i]["idBaliza"]}", recogida)'>Añadir al panel</button>
+                
+                <br><br><button class='btn btn-dark' onclick='eliminarBaliza("${recogida[i]["idBaliza"]}")'>Eliminar del panel</button>`);
+
+                marcador.addTo(map);
+
+                if (sessionStorage.getItem(recogida[i]["idBaliza"]) != null) {
+                    añadirBaliza(recogida[i]["idBaliza"], recogida);
+                }
+            }
+        }
+
+        /** Drop **/
+        function addClassHandler() {
+            $(".droppable").droppable({
+                drop: function(event, ui) {
+
+                    if (ui.draggable[0].id === 'VelMed') {
+
+                        $(`#${event.target.id}--VelMed`).toggle();
+
+                    } else if (ui.draggable[0].id === 'DirMed') {
+
+                        $(`#${event.target.id}--DirVien`).toggle();
+
+                    } else if (ui.draggable[0].id === 'VelMax') {
+
+                        $(`#${event.target.id}--VelMax`).toggle();
+
+                    } else if (ui.draggable[0].id === 'Precip') {
+
+                        $(`#${event.target.id}--Precip`).toggle();
+
+                    } else if (ui.draggable[0].id === 'TemAir') {
+
+                        $(`#${event.target.id}--TemAir`).toggle();
+
+                    } else if (ui.draggable[0].id === 'Humedad') {
+
+                        $(`#${event.target.id}--Humedad`).toggle();
+
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

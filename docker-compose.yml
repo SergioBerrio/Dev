@@ -1,0 +1,62 @@
+version: "3.1"
+
+services:
+
+  mydb:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: dbBalizas
+      MYSQL_ROOT_PASSWORD: 1234
+    volumes:
+      - dbData:/var/lib/mysql
+    networks: 
+      - balizaNet
+
+
+  mydbadmin:
+    image: phpmyadmin
+    container_name: mydbadmin
+    restart: always
+    ports:
+      - "8088:80"
+    environment:
+      - PMA_HOST=mydb
+    networks: 
+      - balizaNet
+
+
+  myapi:
+    tty: true
+    build: .
+    ports:
+      - 3000:3000
+    depends_on: 
+      - mydb
+    environment: 
+      - DB_HOST=mydb
+      - DB_USERNAME=root
+      - DB_PASSWORD=1234
+      - DB_DATABASE=dbBalizas
+    networks: 
+      - balizaNet
+
+
+  myfrontend:
+    image: nginx
+    volumes: 
+      - ./templates:/etc/nginx/templates
+      - ./html:/var/www/html
+    ports: 
+      - 80:80
+    environment: 
+      - NGINX_PORT=80
+    networks: 
+      - balizaNet
+
+networks: 
+  balizaNet: 
+
+volumes: 
+  dbData:
